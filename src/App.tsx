@@ -11,7 +11,7 @@ export default function App() {
     // Generate the one-liner curl command
     // We assume the user's browser URL host is where the app is hosted
     const host = window.location.origin;
-    const command = `curl -sL "${host}/script.py" | URL_MINI="${baseUrl}" KEY_MINI="${apiKey}" python3`;
+    const command = `curl -sL "${host}/script.py" -o kiro.py && echo -e "URL_MINI=${baseUrl}\\nKEY_MINI=${apiKey}" > .env && python3 kiro.py`;
     setGeneratedCommand(command);
     setCopied(false);
   };
@@ -91,7 +91,7 @@ export default function App() {
               
               <p className="text-gray-400 mb-4 text-sm">
                 Copy dan jalankan perintah di bawah ini pada terminal Termux atau VPS Anda.
-                Script Kiro Agentic akan otomatis diunduh dan dieksekusi dengan kredensial Anda.
+                Script Kiro Agentic akan terunduh sebagai <code className="text-blue-400">kiro.py</code>, dan Anda bisa menjalankannya ulang kapan saja cukup dengan mengetik <code className="text-green-400 font-mono">python3 kiro.py</code>.
               </p>
               
               <div className="relative group">

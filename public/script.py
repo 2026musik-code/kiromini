@@ -29,6 +29,16 @@ except ImportError:
 
 console = Console()
 
+# --- AUTO ENV PARSER ---
+# Ini memungkinkan user menjalankan ulang script kapan saja (python3 kiro.py)
+if os.path.exists('.env'):
+    with open('.env', 'r', encoding='utf-8') as f:
+        for line in f:
+            if '=' in line and not line.strip().startswith('#'):
+                k, v = line.strip().split('=', 1)
+                os.environ[k.strip()] = v.strip()
+# -----------------------
+
 # Ambil dari file .env via os.environ (di-inject otomatis oleh generator/curl)
 # Ini penting agar one-liner install tetap berfungsi dengan aman.
 API_KEY = os.environ.get("KEY_MINI", "key")
