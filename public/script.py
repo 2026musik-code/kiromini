@@ -88,7 +88,7 @@ class SimpleOpenAIClient:
             def __init__(self, parent):
                 self.parent = parent
                 
-            def create(self, model, messages, temperature=0.7, max_tokens=150):
+            def create(self, model, messages, temperature=0.7, max_tokens=None, **kwargs):
                 url = f"{self.parent.base_url}/chat/completions"
                 headers = {
                     "Content-Type": "application/json",
@@ -98,9 +98,13 @@ class SimpleOpenAIClient:
                 data = {
                     "model": model,
                     "messages": messages,
-                    "temperature": temperature,
-                    "max_tokens": max_tokens
+                    "temperature": temperature
                 }
+                if max_tokens is not None:
+                    data["max_tokens"] = max_tokens
+                
+                # Gunakan timeout dari kwargs, atau default ke 60.0
+                timeout_val = kwargs.get('timeout', 60.0)
                 
                 req = urllib.request.Request(
                     url, 
@@ -110,7 +114,7 @@ class SimpleOpenAIClient:
                 )
                 
                 try:
-                    with urllib.request.urlopen(req, timeout=60.0) as response:
+                    with urllib.request.urlopen(req, timeout=timeout_val) as response:
                         response_data = json.loads(response.read().decode('utf-8'))
                         # Create a simple mock object to match the openai SDK structure
                         class MockChoice:
