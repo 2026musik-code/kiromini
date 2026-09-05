@@ -52,6 +52,33 @@ class SimpleOpenAIClient:
         # Ensure base URL ends with a slash for easy appending if needed, though usually it's /chat/completions
         self.base_url = base_url.rstrip('/')
         
+    class Models:
+        def __init__(self, parent):
+            self.parent = parent
+            
+        def list(self):
+            url = f"{self.parent.base_url}/models"
+            headers = {
+                "Authorization": f"Bearer {self.parent.api_key}",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            }
+            req = urllib.request.Request(url, headers=headers)
+            try:
+                with urllib.request.urlopen(req, timeout=10.0) as response:
+                    response_data = json.loads(response.read().decode('utf-8'))
+                    
+                    class MockModel:
+                        def __init__(self, id):
+                            self.id = id
+                            
+                    class MockResponse:
+                        def __init__(self, data_list):
+                            self.data = [MockModel(d.get('id', '')) for d in data_list]
+                            
+                    return MockResponse(response_data.get('data', []))
+            except Exception as e:
+                raise Exception(f"Failed to fetch models: {e}")
+
     class Chat:
         def __init__(self, parent):
             self.parent = parent
@@ -108,6 +135,7 @@ class SimpleOpenAIClient:
 
 client = SimpleOpenAIClient(api_key=API_KEY, base_url=BASE_URL)
 client.chat = client.Chat(client)
+client.models = client.Models(client)
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
