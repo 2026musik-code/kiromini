@@ -162,7 +162,8 @@ def show_logo():
 
 def select_model():
     from rich.columns import Columns
-    console.print("\n[bold cyan]Sedang men-scan model AI aktif di server...[/bold cyan]")
+    console.print("
+[bold cyan]Sedang men-scan model AI aktif di server...[/bold cyan]")
     try:
         model_data = client.models.list().data
         models = sorted([m.id for m in model_data])
@@ -190,9 +191,11 @@ def select_model():
     ]
     
     # Header katalog
-    console.print("\n[bold green]╔═══════════════════════════════════════════════════╗[/bold green]")
+    console.print("
+[bold green]╔═══════════════════════════════════════════════════╗[/bold green]")
     console.print("[bold green]║      📚 KATALOG MODEL AI AKTIF 📚                 ║[/bold green]")
-    console.print("[bold green]╚═══════════════════════════════════════════════════╝[/bold green]\n")
+    console.print("[bold green]╚═══════════════════════════════════════════════════╝[/bold green]
+")
     
     # Buat panel (kotak) untuk tiap model
     panels = []
@@ -231,7 +234,8 @@ def select_model():
         _grid.add_row(*_row)
     console.print(_grid)
     
-    choice = Prompt.ask(f"\n[bold yellow]📖 Pilih nomor model (1-{custom_num})[/bold yellow]", default="1")
+    choice = Prompt.ask(f"
+[bold yellow]📖 Pilih nomor model (1-{custom_num})[/bold yellow]", default="1")
     
     if choice == str(custom_num):
         custom = Prompt.ask("[bold yellow]Masukkan nama custom model[/bold yellow]")
@@ -263,7 +267,8 @@ def native_read_file(path, start=None, end=None):
         if s > total:
             return f"Error read_file: baris awal ({s}) melebihi total baris ({total})."
         snippet = ''.join(f"{i}:{lines[i-1]}" for i in range(s, e + 1))
-        return f"Membaca {path} (Baris {s}-{e} dari {total}):\n{snippet}"
+        return f"Membaca {path} (Baris {s}-{e} dari {total}):
+{snippet}"
     except Exception as ex:
         return f"Error read_file: {ex}"
 
@@ -326,7 +331,8 @@ def native_list_dir(path, recursive="false"):
                     lines.append(f"  {'?':>8}    {e}")
         if len(entries) > 200:
             lines.append(f"  ... dan {len(entries)-200} item lainnya (batasi path lebih spesifik).")
-        return "\n".join(lines)
+        return "
+".join(lines)
     except Exception as ex:
         return f"Error list_dir: {ex}"
 
@@ -362,12 +368,14 @@ def native_search_content(path, pattern, recursive="false", ignore_case="false")
                             results.append(f"{fp}:{i}: {line.rstrip()[:200]}")
                             if len(results) >= 100:
                                 results.append(f"... (dipotong, lebih dari 100 hasil. Persempit pattern/path).")
-                                return "\n".join(results)
+                                return "
+".join(results)
             except (OSError, PermissionError):
                 continue
         if not results:
             return f"Tidak ada hasil untuk pattern '{pattern}' di '{path}'."
-        return "\n".join(results)
+        return "
+".join(results)
     except re.error as rex:
         return f"Error search_content: regex tidak valid - {rex}"
     except Exception as ex:
@@ -394,12 +402,19 @@ def native_http_request(url, method="GET", body=None, headers=None):
             raw = resp.read().decode('utf-8', errors='replace')
         parsed = ""
         try:
-            parsed = "\n(Auto-parsed JSON):\n" + json.dumps(json.loads(raw), indent=2, ensure_ascii=False)
+            parsed = "
+(Auto-parsed JSON):
+" + json.dumps(json.loads(raw), indent=2, ensure_ascii=False)
         except Exception:
             pass
         if len(raw) > 6000:
-            raw = raw[:6000] + "\n... (response dipotong karena terlalu panjang)"
-        return f"HTTP {method.upper()} {url}\nStatus: {status}\n\nResponse:\n{raw}{parsed}"
+            raw = raw[:6000] + "
+... (response dipotong karena terlalu panjang)"
+        return f"HTTP {method.upper()} {url}
+Status: {status}
+
+Response:
+{raw}{parsed}"
     except urllib.error.HTTPError as he:
         return f"Error http_request: HTTP {he.code} - {he.reason}"
     except Exception as ex:
@@ -440,11 +455,14 @@ def native_self_check(agent_path, agent_backup):
     try:
         if os.path.exists(agent_backup):
             shutil.copy2(agent_backup, agent_path)
-            return (f"🛡️ SELF-HEALING AKTIF: sintaks rusak setelah self-edit!\n"
-                    f"Output error: {result.stderr.strip()[:500]}\n"
+            return (f"🛡️ SELF-HEALING AKTIF: sintaks rusak setelah self-edit!
+"
+                    f"Output error: {result.stderr.strip()[:500]}
+"
                     f"→ Backup otomatis di-restore dari {agent_backup}. "
                     f"Coba edit lagi dengan target yang lebih presisi.")
-        return (f"⚠️ SELF-CHECK GAGAL dan backup tidak ditemukan!\n"
+        return (f"⚠️ SELF-CHECK GAGAL dan backup tidak ditemukan!
+"
                 f"Output error: {result.stderr.strip()[:500]}")
     except Exception as ex:
         return f"Error self_check/restore: {ex}"
@@ -460,14 +478,17 @@ def main():
     
     status_text = Text()
     status_text.append("Status: ", style="bold green")
-    status_text.append("ONLINE\n", style="bold cyan")
+    status_text.append("ONLINE
+", style="bold cyan")
     status_text.append("Model Aktif: ", style="bold green")
-    status_text.append(f"{active_model}\n", style="bold yellow")
+    status_text.append(f"{active_model}
+", style="bold yellow")
     status_text.append("Tujuan Utama: ", style="bold green")
     status_text.append("Koding, Analisa, Temuan, Cek Error", style="italic white")
     
     console.print(Panel(status_text, border_style="green"))
-    console.print("[italic gray]Ketik '/menu' untuk melihat daftar perintah, atau 'exit' untuk keluar.[/italic gray]\n")
+    console.print("[italic gray]Ketik '/menu' untuk melihat daftar perintah, atau 'exit' untuk keluar.[/italic gray]
+")
     
     # === SELF-IMPROVEMENT: Lokasi kode sumber agen sendiri ===
     agent_path = os.path.abspath(__file__)
@@ -481,7 +502,8 @@ def main():
         
     # Ambil list custom script tool yang sudah ada (hanya file .py/.sh, kecualikan txt catatan)
     existing_tools = [f for f in os.listdir(tools_dir) if not f.endswith('.txt')]
-    tools_list_text = "\n".join([f"- {tool}" for tool in existing_tools]) if existing_tools else "- (Belum ada custom script tool)"
+    tools_list_text = "
+".join([f"- {tool}" for tool in existing_tools]) if existing_tools else "- (Belum ada custom script tool)"
 
     # Baca CLI/External tools yang diinstall
     cli_tools_file = os.path.join(tools_dir, "installed_cli_tools.txt")
@@ -567,13 +589,15 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
     
     while True:
         try:
-            user_input = Prompt.ask("\n[bold green]➜ Anda[/bold green]")
+            user_input = Prompt.ask("
+[bold green]➜ Anda[/bold green]")
             if user_input.lower() in ['exit', 'quit', '/exit', '/quit']:
                 console.print("[bold red]Mematikan Agen... Sampai jumpa![/bold red]")
                 break
                 
             if user_input.lower() == '/menu':
-                console.print("\n[bold cyan]=== MENU PERINTAH ===[/bold cyan]")
+                console.print("
+[bold cyan]=== MENU PERINTAH ===[/bold cyan]")
                 console.print("[yellow]/menu[/yellow]    - Menampilkan daftar perintah ini")
                 console.print("[yellow]/model[/yellow]   - Mengganti model AI yang aktif")
                 console.print("[yellow]/history[/yellow] - Menampilkan jumlah riwayat percakapan")
@@ -581,27 +605,33 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
                 console.print("[yellow]/restart[/yellow] - Mereset sesi percakapan (ingatan AI)")
                 console.print("[yellow]/self[/yellow]    - Info kode sumber, versi, & changelog diri sendiri")
                 console.print("[yellow]/improve[/yellow] - Mode Self-Improvement (kembangkan diri sendiri)")
-                console.print("[yellow]/exit[/yellow]    - Keluar dari program\n")
+                console.print("[yellow]/exit[/yellow]    - Keluar dari program
+")
                 continue
                 
             if user_input.lower() == '/model':
                 active_model = select_model()
-                console.print(f"[bold green]Model berhasil diubah ke:[/bold green] {active_model}\n")
+                console.print(f"[bold green]Model berhasil diubah ke:[/bold green] {active_model}
+")
                 continue
                 
             if user_input.lower() == '/history':
                 user_msgs = sum(1 for m in messages if m['role'] == 'user')
                 asst_msgs = sum(1 for m in messages if m['role'] == 'assistant')
-                console.print(f"\n[bold cyan]=== STATISTIK RIWAYAT ===[/bold cyan]")
+                console.print(f"
+[bold cyan]=== STATISTIK RIWAYAT ===[/bold cyan]")
                 console.print(f"Total pesan tersimpan: {len(messages)}")
                 console.print(f"Pesan dari Anda: {user_msgs}")
-                console.print(f"Pesan dari AI: {asst_msgs}\n")
+                console.print(f"Pesan dari AI: {asst_msgs}
+")
                 continue
                 
             if user_input.lower() in ['/restart', '/clear', '/hapus']:
                 messages = [messages[0]]
                 os.system('cls' if os.name == 'nt' else 'clear')
-                console.print("\n[bold green]✅ Riwayat percakapan berhasil dihapus. Layar dan ingatan AI telah dibersihkan![/bold green]\n")
+                console.print("
+[bold green]✅ Riwayat percakapan berhasil dihapus. Layar dan ingatan AI telah dibersihkan![/bold green]
+")
                 continue
 
             # === SELF-IMPROVEMENT: /self — info kode sumber & changelog diri sendiri ===
@@ -640,32 +670,52 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
                 info.add_row("Terakhir Dimodifikasi", str(mtime))
                 console.print(info)
                 console.print(Panel(changelog, title="[bold yellow]📜 CHANGELOG[/bold yellow]", border_style="yellow"))
-                console.print("[italic gray]Gunakan /improve untuk mengembangkan diri sendiri, lalu /restart untuk memuat ulang.[/italic gray]\n")
+                console.print("[italic gray]Gunakan /improve untuk mengembangkan diri sendiri, lalu /restart untuk memuat ulang.[/italic gray]
+")
                 continue
 
             # === SELF-IMPROVEMENT: /improve — mode pengembangan diri ===
             if user_input.lower() == '/improve':
                 console.print(Panel(
-                    f"[bold yellow]MODE SELF-IMPROVEMENT AKTIF[/bold yellow]\n\n"
-                    f"Kode sumber Anda: [cyan]{agent_path}[/cyan]\n"
-                    f"Backup saat ini: [cyan]{agent_backup}[/cyan]\n\n"
-                    f"Deskripsikan fitur yang ingin Anda tambahkan/perbaiki pada diri Anda sendiri,\n"
-                    f"contoh: 'Tambahkan fitur export chat ke file markdown'.\n"
+                    f"[bold yellow]MODE SELF-IMPROVEMENT AKTIF[/bold yellow]
+
+"
+                    f"Kode sumber Anda: [cyan]{agent_path}[/cyan]
+"
+                    f"Backup saat ini: [cyan]{agent_backup}[/cyan]
+
+"
+                    f"Deskripsikan fitur yang ingin Anda tambahkan/perbaiki pada diri Anda sendiri,
+"
+                    f"contoh: 'Tambahkan fitur export chat ke file markdown'.
+"
                     f"Agen akan: [green]1)[/green] backup dirinya → [green]2)[/green] baca & edit kode sumbernya → [green]3)[/green] verifikasi sintaks → [green]4)[/green] update changelog → [green]5)[/green] minta Anda /restart.",
                     border_style="magenta"
                 ))
-                improve_request = Prompt.ask("\n[bold green]➜ Fitur apa yang ingin dikembangkan?[/bold green]")
+                improve_request = Prompt.ask("
+[bold green]➜ Fitur apa yang ingin dikembangkan?[/bold green]")
                 if not improve_request.strip():
                     continue
                 user_input = (
-                    f"MODE SELF-IMPROVEMENT: Saya (agen) diminta untuk mengembangkan diri sendiri.\n"
-                    f"Permintaan fitur: {improve_request}\n\n"
-                    f"IKUTI ATURAN SELF-IMPROVEMENT di system prompt:\n"
-                    f"1. Backup dulu: cp {agent_path} {agent_backup}\n"
-                    f"2. Baca kode sumbermu sendiri di {agent_path} (gunakan sed -n 'X,Yp' untuk baca per bagian).\n"
-                    f"3. Edit dengan sed/python patch. JANGAN hapus arsitektur utama (main, select_model, UI, loop).\n"
-                    f"4. Verifikasi: python -m py_compile {agent_path}\n"
-                    f"5. Update versi & changelog di {agent_version_file} (format: '<versi>\n---CHANGELOG---\n<tanggal> - <perubahan>').\n"
+                    f"MODE SELF-IMPROVEMENT: Saya (agen) diminta untuk mengembangkan diri sendiri.
+"
+                    f"Permintaan fitur: {improve_request}
+
+"
+                    f"IKUTI ATURAN SELF-IMPROVEMENT di system prompt:
+"
+                    f"1. Backup dulu: cp {agent_path} {agent_backup}
+"
+                    f"2. Baca kode sumbermu sendiri di {agent_path} (gunakan sed -n 'X,Yp' untuk baca per bagian).
+"
+                    f"3. Edit dengan sed/python patch. JANGAN hapus arsitektur utama (main, select_model, UI, loop).
+"
+                    f"4. Verifikasi: python -m py_compile {agent_path}
+"
+                    f"5. Update versi & changelog di {agent_version_file} (format: '<versi>
+---CHANGELOG---
+<tanggal> - <perubahan>').
+"
                     f"6. Jika sukses, beri tahu saya untuk mengetik /restart."
                 )
                 # Jatuh ke pipeline normal (tidak continue) agar AI mengeksekusi langkah-langkahnya
@@ -730,7 +780,11 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
                         native_calls.append(('read_file', native_read_file(m.group(1), m.group(2), m.group(3))))
                     for m in re.finditer(r'<write_file\s+path="([^"]+)"(?:\s+append="(true|false)")?\s*>(.*?)</write_file>', reply, flags=re.DOTALL | re.IGNORECASE):
                         native_calls.append(('write_file', native_write_file(m.group(1), _unesc(m.group(3)), append=(m.group(2) == 'true'))))
-                    for m in re.finditer(r'<edit_file\s+path="([^"]+)">\s*<target>\n?(.*?)\n?</target>\s*<replacement>\n?(.*?)\n?</replacement>\s*</edit_file>', reply, flags=re.DOTALL | re.IGNORECASE):
+                    for m in re.finditer(r'<edit_file\s+path="([^"]+)">\s*<target>
+?(.*?)
+?</target>\s*<replacement>
+?(.*?)
+?</replacement>\s*</edit_file>', reply, flags=re.DOTALL | re.IGNORECASE):
                         edit_path = m.group(1)
                         edit_result = native_edit_file(edit_path, _unesc(m.group(2)), _unesc(m.group(3)))
                         native_calls.append(('edit_file', edit_result))
@@ -751,7 +805,8 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
                         # Tampilkan apa yang sedang dipikirkan/direncanakan AI sebelum mengeksekusi
                         display_text = re.sub(r'<invoke.*?</invoke>', '', reply, flags=re.DOTALL | re.IGNORECASE).strip()
                         if display_text:
-                            console.print("\n")
+                            console.print("
+")
                             console.print(Panel(
                                 Markdown(display_text),
                                 title="[bold yellow]🤖 Aktivitas Agent[/bold yellow]",
@@ -763,7 +818,10 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
                         # === v1.2: Eksekusi NATIVE TOOLS ===
                         for tool_name, tool_result in native_calls:
                             console.print(f"[dim magenta]➔ Native tool [{tool_name}] dieksekusi[/dim magenta]")
-                            tool_outputs += f"Native tool [{tool_name}] result:\n{tool_result}\n\n"
+                            tool_outputs += f"Native tool [{tool_name}] result:
+{tool_result}
+
+"
                         for cmd in commands_to_run:
                             cmd = cmd.strip()
                             console.print(f"[dim cyan]➔ Menjalankan perintah di latar belakang:[/dim cyan] [dim]{cmd}[/dim]")
@@ -777,12 +835,21 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
                                 
                             # Batasi panjang output agar tidak terlalu panjang (max 4000 char per output)
                             if len(output) > 4000:
-                                output = output[:4000] + "\n... (output dipotong karena terlalu panjang)"
+                                output = output[:4000] + "
+... (output dipotong karena terlalu panjang)"
                                 
-                            tool_outputs += f"Command: {cmd}\nOutput:\n{output}\n\n"
+                            tool_outputs += f"Command: {cmd}
+Output:
+{output}
+
+"
                         
                         # Tambahkan output ke message lalu ulangi loop agar AI merespon
-                        messages.append({"role": "user", "content": f"Berhasil menjalankan perintah di latar belakang. Berikut adalah outputnya (tolong analisa dan berikan ringkasan hasil kerja, atau lanjutkan langkah berikutnya jika diperlukan):\n\n<tool_response>\n{tool_outputs}\n</tool_response>"})
+                        messages.append({"role": "user", "content": f"Berhasil menjalankan perintah di latar belakang. Berikut adalah outputnya (tolong analisa dan berikan ringkasan hasil kerja, atau lanjutkan langkah berikutnya jika diperlukan):
+
+<tool_response>
+{tool_outputs}
+</tool_response>"})
                     else:
                         # Jika tidak ada perintah, keluar dari loop AI
                         break
@@ -792,7 +859,8 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
                 continue
                 
             # Rendering markdown yang rapih HANYA untuk hasil akhir
-            console.print("\n")
+            console.print("
+")
             
             # Hilangkan XML tags jika tersisa di hasil akhir
             final_display = re.sub(r'<invoke.*?</invoke>', '', reply, flags=re.DOTALL | re.IGNORECASE)
@@ -806,10 +874,12 @@ Selalu gunakan format di atas jika Anda butuh berinteraksi dengan sistem, file, 
                     
             
         except KeyboardInterrupt:
-            console.print("\n[bold red]Sesi diakhiri oleh pengguna.[/bold red]")
+            console.print("
+[bold red]Sesi diakhiri oleh pengguna.[/bold red]")
             break
         except Exception as e:
-            console.print(f"\n[bold red]✖ Error:[/bold red] {str(e)}")
+            console.print(f"
+[bold red]✖ Error:[/bold red] {str(e)}")
 
 if __name__ == "__main__":
     main()
