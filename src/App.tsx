@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Copy, Check, Terminal, Shield, ArrowRight, Server, Key } from 'lucide-react';
+import { Copy, Check, Terminal, Shield, ArrowRight, Server, Key, Command, Sparkles } from 'lucide-react';
 
 export default function App() {
   const [baseUrl, setBaseUrl] = useState('');
@@ -24,94 +24,119 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#121212] text-gray-100 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <header className="mb-10 text-center">
-          <div className="inline-flex items-center justify-center space-x-3 mb-4">
-            <Shield className="text-green-500" size={36} />
-            <h1 className="text-4xl font-bold">Kiro Agentic Deployer</h1>
-          </div>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Masukkan konfigurasi AI Anda untuk menghasilkan One-Liner Script.
-            Script dapat langsung dijalankan di Termux atau VPS tanpa perlu membuat file .env manual.
-          </p>
-        </header>
+    <div className="min-h-screen bg-[#09090b] text-zinc-300 font-sans selection:bg-cyan-500/30 relative overflow-hidden flex flex-col items-center justify-center p-4 sm:p-8">
+      
+      {/* Background Ambient Glow */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-cyan-500/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] pointer-events-none" />
 
-        <div className="bg-[#1e1e1e] p-6 border border-gray-700 rounded-xl shadow-lg mb-8">
-          <h2 className="text-xl font-semibold mb-6 text-white border-b border-gray-700 pb-4">Konfigurasi Kredensial</h2>
+      <div className="w-full max-w-2xl relative z-10 py-10">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center p-3 bg-zinc-900 border border-zinc-800 rounded-2xl mb-6 shadow-xl">
+            <Command className="text-cyan-400 w-8 h-8" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-5">
+            Kiro <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Deployer</span>
+          </h1>
+          <p className="text-zinc-400 text-lg max-w-xl mx-auto leading-relaxed">
+            Platform deployment seketika untuk Kiro Agentic. Masukkan kredensial Anda untuk menghasilkan <span className="text-zinc-200 font-medium">One-Liner Install Script</span> yang aman dan permanen.
+          </p>
+        </div>
+
+        {/* Config Card */}
+        <div className="bg-zinc-900/80 backdrop-blur-xl border border-zinc-800/80 p-6 md:p-8 rounded-[2rem] shadow-2xl mb-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
+              <Shield className="text-cyan-400 w-5 h-5" />
+              Konfigurasi Node
+            </h2>
+            <div className="text-xs font-medium px-2.5 py-1 bg-zinc-800 text-zinc-400 rounded-full border border-zinc-700/50">
+              Secure Mode Aktif
+            </div>
+          </div>
           
-          <div className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1 flex items-center">
-                <Server size={16} className="mr-2 text-blue-400" />
-                AI Base URL (URL_MINI)
+          <div className="space-y-6">
+            {/* Input 1 */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-400 flex items-center gap-2 ml-1">
+                <Server size={14} className="text-zinc-500" />
+                Base URL (URL_MINI)
               </label>
               <input
                 type="url"
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
-                placeholder="https://autoapp.biz.id/v1"
-                className="w-full bg-[#121212] text-gray-200 text-sm p-3 rounded border border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                placeholder="https://api.namadomain.com/v1"
+                className="w-full bg-zinc-950/50 text-white placeholder-zinc-600 text-sm p-4 rounded-xl border border-zinc-800 focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-1 flex items-center">
-                <Key size={16} className="mr-2 text-yellow-400" />
-                AI API Key (KEY_MINI)
+            {/* Input 2 */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-400 flex items-center gap-2 ml-1">
+                <Key size={14} className="text-zinc-500" />
+                API Key (KEY_MINI)
               </label>
               <input
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="sk-qwen-395decf..."
-                className="w-full bg-[#121212] text-gray-200 text-sm p-3 rounded border border-gray-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                placeholder="sk-..."
+                className="w-full bg-zinc-950/50 text-white placeholder-zinc-600 text-sm p-4 rounded-xl border border-zinc-800 focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/10 outline-none transition-all tracking-widest"
               />
             </div>
             
             <button
               onClick={handleGenerate}
               disabled={!baseUrl.trim() || !apiKey.trim()}
-              className="mt-6 w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 rounded-lg font-semibold transition-colors"
+              className="mt-6 w-full group relative flex items-center justify-center gap-2 bg-white text-zinc-950 hover:bg-zinc-200 disabled:bg-zinc-800 disabled:text-zinc-500 disabled:cursor-not-allowed py-4 rounded-xl font-semibold transition-all duration-200 overflow-hidden"
             >
-              <span>Generate Install Script</span>
-              <ArrowRight size={18} />
+              <Sparkles size={18} className={(!baseUrl.trim() || !apiKey.trim()) ? "opacity-50" : "text-cyan-600"} />
+              <span>Generate Script</span>
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
         </div>
 
+        {/* Result Area */}
         {generatedCommand && (
-          <div className="space-y-4 animate-in fade-in duration-500">
-            <div className="bg-[#1e1e1e] p-6 border border-green-500/30 rounded-xl shadow-lg relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-green-500"></div>
-              <h2 className="text-xl font-semibold mb-4 flex items-center text-green-400">
-                <Check className="mr-2" size={24} />
-                Script Berhasil Dibuat
-              </h2>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] overflow-hidden shadow-2xl">
+              {/* Terminal Header */}
+              <div className="bg-zinc-950/50 border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
+                </div>
+                <div className="text-xs font-mono text-zinc-500 flex items-center gap-2">
+                  <Terminal size={12} />
+                  termux-bash
+                </div>
+              </div>
               
-              <p className="text-gray-400 mb-4 text-sm">
-                Copy dan jalankan perintah di bawah ini pada terminal Termux atau VPS Anda.
-                Script Kiro Agentic akan terunduh sebagai <code className="text-blue-400">kiro.py</code>, dan Anda bisa menjalankannya ulang kapan saja cukup dengan mengetik <code className="text-green-400 font-mono">python3 kiro.py</code>.
-              </p>
-              
-              <div className="relative group">
-                <div className="bg-[#121212] p-4 pr-16 rounded border border-gray-700 font-mono text-sm text-cyan-300 break-all">
+              {/* Terminal Body */}
+              <div className="p-6 md:p-8 relative group">
+                <div className="font-mono text-sm leading-relaxed break-all pr-12 text-zinc-300">
+                  <span className="text-cyan-400 select-none">$ </span>
                   {generatedCommand}
                 </div>
                 
                 <button
                   onClick={handleCopy}
-                  className="absolute right-2 top-2 bottom-2 px-4 flex items-center justify-center text-gray-300 bg-[#2d2d2d] hover:bg-[#3d3d3d] rounded transition-colors"
+                  className="absolute right-6 top-6 p-2.5 flex items-center justify-center text-zinc-400 bg-zinc-800 hover:bg-zinc-700 hover:text-white rounded-lg transition-all border border-zinc-700"
                   title="Copy to clipboard"
                 >
                   {copied ? <Check size={18} className="text-green-400" /> : <Copy size={18} />}
                 </button>
               </div>
               
-              <div className="mt-6 border-t border-gray-700 pt-4 flex items-start space-x-3 text-sm text-gray-500">
-                <Terminal size={18} className="mt-0.5 text-gray-400 flex-shrink-0" />
-                <p>
-                  Perintah ini menggunakan variabel lingkungan (environment variables) yang aman karena tidak akan tersimpan secara permanen dalam file di dalam server Anda. Kredensial hanya aktif selama script berjalan di memori.
+              {/* Terminal Footer Info */}
+              <div className="bg-cyan-500/5 px-6 md:px-8 py-5 border-t border-cyan-500/10 flex items-start gap-3">
+                <Check size={18} className="text-cyan-400 mt-0.5 shrink-0" />
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  Script akan disimpan secara permanen sebagai <code className="text-cyan-300 font-mono text-xs bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">kiro.py</code>. Untuk penggunaan selanjutnya di lain hari, Anda cukup menjalankan <code className="text-cyan-300 font-mono text-xs bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">python3 kiro.py</code> di terminal Anda.
                 </p>
               </div>
             </div>
