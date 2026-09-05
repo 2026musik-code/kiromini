@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "Kiro Agentic Deployer",
+  "description": "Platform deployment seketika untuk Kiro Agentic.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
