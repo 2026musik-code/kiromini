@@ -1,5 +1,13 @@
 import os
 import sys
+
+# Perbaikan untuk EOFError saat script dijalankan via pipe (curl ... | python3)
+if not sys.stdin.isatty():
+    try:
+        sys.stdin = open('/dev/tty')
+    except:
+        pass
+
 import re
 import json
 import shutil
