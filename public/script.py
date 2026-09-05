@@ -13,6 +13,8 @@ import json
 import shutil
 import subprocess
 import time
+import urllib.request
+import urllib.error
 
 try:
     from rich.console import Console, Group
@@ -22,9 +24,8 @@ try:
     from rich.syntax import Syntax
     from rich.prompt import Prompt
     from rich.table import Table
-    from openai import OpenAI
 except ImportError:
-    print("Harap install dependencies terlebih dahulu: pip install rich openai")
+    print("Harap install dependencies terlebih dahulu: pip install rich")
     sys.exit(1)
 
 console = Console()
@@ -45,12 +46,68 @@ API_KEY = os.environ.get("KEY_MINI", "key")
 BASE_URL = os.environ.get("URL_MINI", "url")
 
 # Setup Client
-client = OpenAI(
-    api_key=API_KEY, 
-    base_url=BASE_URL,
-    timeout=60.0, # Tambahkan timeout agar tidak hang/macet jika server lambat
-    default_headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-)
+class SimpleOpenAIClient:
+    def __init__(self, api_key, base_url):
+        self.api_key = api_key
+        # Ensure base URL ends with a slash for easy appending if needed, though usually it's /chat/completions
+        self.base_url = base_url.rstrip('/')
+        
+    class Chat:
+        def __init__(self, parent):
+            self.parent = parent
+            self.completions = self.Completions(parent)
+            
+        class Completions:
+            def __init__(self, parent):
+                self.parent = parent
+                
+            def create(self, model, messages, temperature=0.7, max_tokens=150):
+                url = f"{self.parent.base_url}/chat/completions"
+                headers = {
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.parent.api_key}",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                }
+                data = {
+                    "model": model,
+                    "messages": messages,
+                    "temperature": temperature,
+                    "max_tokens": max_tokens
+                }
+                
+                req = urllib.request.Request(
+                    url, 
+                    data=json.dumps(data).encode('utf-8'),
+                    headers=headers,
+                    method='POST'
+                )
+                
+                try:
+                    with urllib.request.urlopen(req, timeout=60.0) as response:
+                        response_data = json.loads(response.read().decode('utf-8'))
+                        # Create a simple mock object to match the openai SDK structure
+                        class MockChoice:
+                            def __init__(self, msg_data):
+                                class MockMessage:
+                                    def __init__(self, content):
+                                        self.content = content
+                                self.message = MockMessage(msg_data.get('content', ''))
+                        
+                        class MockResponse:
+                            def __init__(self, choices_data):
+                                self.choices = [MockChoice(c.get('message', {})) for c in choices_data]
+                                
+                        return MockResponse(response_data.get('choices', []))
+                        
+                except urllib.error.URLError as e:
+                    print(f"API Request failed: {e}")
+                    # Return empty structure to prevent crashes
+                    class EmptyResponse:
+                        choices = []
+                    return EmptyResponse()
+
+client = SimpleOpenAIClient(api_key=API_KEY, base_url=BASE_URL)
+client.chat = client.Chat(client)
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
