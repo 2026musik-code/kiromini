@@ -1,0 +1,6 @@
+name = "kiro-deployer"
+pages_build_output_dir = "dist"
+
+[[kv_namespaces]]
+binding = "akun_kv"
+id = "fc7e78f9ecec4a4b95fbf4ab82e1e057"

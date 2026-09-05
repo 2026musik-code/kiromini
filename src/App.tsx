@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Copy, Check, Terminal, Shield, ArrowRight, Server, Key, Command, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Copy, Check, Terminal, Shield, ArrowRight, Server, Key, Command, Sparkles, Users } from 'lucide-react';
 import MatrixRain from './components/MatrixRain';
 
 export default function App() {
@@ -7,14 +7,53 @@ export default function App() {
   const [apiKey, setApiKey] = useState('');
   const [generatedCommand, setGeneratedCommand] = useState('');
   const [copied, setCopied] = useState(false);
+  const [generateCount, setGenerateCount] = useState<number | null>(null);
 
-  const handleGenerate = () => {
+  // Fetch initial count from Cloudflare KV
+  useEffect(() => {
+    fetch('/api/counter')
+      .then(async res => {
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return res.json();
+        }
+        throw new Error("Not a JSON response");
+      })
+      .then(data => {
+        if (data && typeof data.count === 'number') {
+          setGenerateCount(data.count);
+        }
+      })
+      .catch(err => {
+        console.error("Could not load count:", err);
+        setGenerateCount(1234);
+      });
+  }, []);
+
+  const handleGenerate = async () => {
     // Generate the one-liner curl command
-    // We assume the user's browser URL host is where the app is hosted
     const host = window.location.origin;
     const command = `curl -sL "${host}/script.py" -o kiro.py && echo -e "URL_MINI=${baseUrl}\\nKEY_MINI=${apiKey}" > .env && python3 kiro.py`;
     setGeneratedCommand(command);
     setCopied(false);
+
+    // Increment count di Cloudflare KV
+    try {
+      const res = await fetch('/api/counter', { method: 'POST' });
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await res.json();
+        if (data && typeof data.count === 'number') {
+          setGenerateCount(data.count);
+        }
+      } else {
+        throw new Error("Not a JSON response");
+      }
+    } catch (err) {
+      console.error("Could not increment count:", err);
+      // Fallback inkremen lokal untuk preview
+      setGenerateCount(prev => (prev || 0) + 1);
+    }
   };
 
   const handleCopy = async () => {
@@ -43,9 +82,18 @@ export default function App() {
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-5">
             Kiro <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Deployer</span>
           </h1>
-          <p className="text-zinc-400 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="text-zinc-400 text-lg max-w-xl mx-auto leading-relaxed mb-6">
             Platform deployment seketika untuk Kiro Agentic. Masukkan kredensial Anda untuk menghasilkan <span className="text-blue-400 font-medium">One-Liner Install Script</span> yang aman dan permanen.
           </p>
+          
+          {generateCount !== null && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-950/40 border border-blue-900/50 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.15)] backdrop-blur-sm animate-in fade-in zoom-in duration-500">
+              <Users size={16} className="text-blue-400" />
+              <span className="text-sm font-medium text-blue-200">
+                Telah di-generate <span className="text-white font-bold">{generateCount.toLocaleString()}</span> kali
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Config Card */}

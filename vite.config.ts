@@ -3,9 +3,27 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import {defineConfig} from 'vite';
 
+const mockCounterPlugin = () => ({
+  name: 'mock-counter-api',
+  configureServer(server: any) {
+    let mockCount = 1234;
+    server.middlewares.use((req: any, res: any, next: any) => {
+      if (req.url === '/api/counter') {
+        if (req.method === 'POST') {
+          mockCount++;
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ count: mockCount }));
+        return;
+      }
+      next();
+    });
+  }
+});
+
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), mockCounterPlugin()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
