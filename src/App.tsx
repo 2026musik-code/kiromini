@@ -11,7 +11,7 @@ export default function App() {
     // Generate the one-liner curl command
     // We assume the user's browser URL host is where the app is hosted
     const host = window.location.origin;
-    const command = `curl -sL "${host}/api/script" | URL_MINI="${baseUrl}" KEY_MINI="${apiKey}" python3`;
+    const command = `curl -sL "${host}/script.py" | URL_MINI="${baseUrl}" KEY_MINI="${apiKey}" python3`;
     setGeneratedCommand(command);
     setCopied(false);
   };
